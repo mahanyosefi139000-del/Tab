@@ -1,0 +1,25 @@
+{
+    "ads": [
+        {
+            "text": "🤖 کانال ویدوکس - آموزش هوش مصنوعی",
+            "link": "https://rubika.ir/rubkika",
+            "color": "#10a37f",
+            "emoji": "🤖"
+        },
+        {
+            "text": "💪 رفع ریزش مو با روش طبیعی",
+            "link": "https://rubka.ir",
+            "color": "#f0a500",
+            "emoji": "💇"
+        },
+        {
+            "text": "🎮 بازی دوز آنلاین با دوستان",
+            "link": "https://example.com/doz",
+            "color": "#3b82f6",
+            "emoji": "🎮"
+        }
+    ],
+    "settings": {
+        "show_after_messages": 2
+    }
+}
