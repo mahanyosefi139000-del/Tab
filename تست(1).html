@@ -1,542 +1,474 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>دوز | XO - بازی زیبا با ربات مبتدی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ماشین حساب خفن SAL</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
         }
-        body {
-            transition: all 0.3s ease;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', 'Vazir', 'Tahoma', sans-serif;
-            margin: 0;
-            padding: 20px;
+
+        /* تم روشن (پیش‌فرض) */
+        :root {
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --display-bg: #e8e8e8;
+            --display-text: #1a1a1a;
+            --expression-text: #555;
+            --btn-bg: #ffffff;
+            --btn-text: #333;
+            --btn-op-bg: #f0a500;
+            --btn-op-text: white;
+            --btn-func-bg: #e0e0e0;
+            --btn-func-text: #333;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --border: #ddd;
         }
-        body.light {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
+
         body.dark {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --display-bg: #2a2a2a;
+            --display-text: #f0f0f0;
+            --expression-text: #aaa;
+            --btn-bg: #2d2d2d;
+            --btn-text: #eee;
+            --btn-op-bg: #f0a500;
+            --btn-op-text: #121212;
+            --btn-func-bg: #3a3a3a;
+            --btn-func-text: #eee;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --border: #3a3a3a;
         }
-        .game-wrapper {
-            border-radius: 65px;
-            padding: 25px 20px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+
+        body {
+            background: var(--bg);
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+            transition: background 0.2s ease;
         }
-        body.light .game-wrapper {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-        body.dark .game-wrapper {
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .game-container {
-            max-width: 500px;
+
+        .calculator {
+            max-width: 380px;
             width: 100%;
-            margin: 0 auto;
-            text-align: center;
+            background: var(--card-bg);
+            border-radius: 48px;
+            padding: 24px 20px 30px;
+            box-shadow: 0 20px 40px var(--shadow);
+            transition: all 0.2s;
         }
-        .game-header {
-            margin-bottom: 25px;
+
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 0 4px;
         }
-        .game-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #f5af19, #f12711);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--btn-op-bg);
+            background: var(--btn-func-bg);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-family: monospace;
         }
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .icon-btn {
-            background: rgba(255,255,255,0.2);
+        .settings-btn {
+            background: var(--btn-func-bg);
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            font-size: 1.3rem;
+            font-size: 24px;
             cursor: pointer;
-            transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.1s linear;
+            color: var(--btn-text);
+            box-shadow: 0 2px 5px var(--shadow);
         }
-        body.light .icon-btn {
-            background: rgba(0,0,0,0.1);
-            color: #333;
+        .settings-btn:active {
+            transform: scale(0.94);
         }
-        body.dark .icon-btn {
-            background: rgba(255,255,255,0.15);
-            color: white;
-        }
-        .mode-selector {
+
+        .display {
+            background: var(--display-bg);
+            border-radius: 32px;
+            padding: 20px 20px;
+            margin: 16px 0 24px;
+            text-align: right;
+            min-height: 130px;
             display: flex;
-            gap: 15px;
+            flex-direction: column;
             justify-content: center;
-            margin-bottom: 25px;
         }
-        .mode-btn {
-            background: rgba(255,255,255,0.15);
-            border: 2px solid rgba(255,255,255,0.3);
-            padding: 8px 18px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
+        .expression {
+            font-size: 1.3rem;
+            color: var(--expression-text);
+            word-wrap: break-word;
+            font-family: monospace;
+            min-height: 32px;
         }
-        body.light .mode-btn {
-            background: rgba(0,0,0,0.1);
-            color: #333;
-            border-color: rgba(0,0,0,0.2);
-        }
-        body.dark .mode-btn {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border-color: rgba(255,255,255,0.3);
-        }
-        .mode-btn.active {
-            background: linear-gradient(135deg, #f5af19, #f12711);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 0 0 3px #f5af19, 0 0 0 6px rgba(245,175,25,0.3);
-        }
-        .score-board {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.4);
-            border-radius: 60px;
-            padding: 12px 20px;
-            margin-bottom: 25px;
-        }
-        body.light .score-board {
-            background: rgba(0,0,0,0.1);
-        }
-        .score {
-            text-align: center;
-            flex: 1;
-        }
-        .score-label {
-            font-size: 0.8rem;
+        .result {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--display-text);
+            margin-top: 12px;
+            font-family: monospace;
             letter-spacing: 1px;
-            font-weight: bold;
+            word-wrap: break-word;
         }
-        body.light .score-label { color: #555; }
-        body.dark .score-label { color: #f0c674; }
-        .score-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        body.light .score-value { color: #333; }
-        body.dark .score-value { color: #f5f5f5; }
-        .score-value.x { color: #4ecdc4; }
-        .score-value.o { color: #ff6b6b; }
-        .turn-indicator {
-            background: rgba(0,0,0,0.5);
-            border-radius: 50px;
-            padding: 8px 18px;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-        body.light .turn-indicator { background: rgba(0,0,0,0.1); }
-        .turn-text { font-weight: bold; }
-        body.light .turn-text { color: #333; }
-        body.dark .turn-text { color: white; }
-        .turn-symbol { font-size: 1.3rem; font-weight: bold; margin-right: 8px; }
-        .board {
+
+        .buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 45px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
-        .cell {
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(145deg, #2c3e50, #1a252f);
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            color: white;
-        }
-        body.light .cell {
-            background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
-            color: #333;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        }
-        .cell.X { color: #4ecdc4; text-shadow: 0 0 8px #4ecdc4; }
-        .cell.O { color: #ff6b6b; text-shadow: 0 0 8px #ff6b6b; }
-        body.light .cell.X { color: #2c9c93; text-shadow: none; }
-        body.light .cell.O { color: #e55555; text-shadow: none; }
-        .cell.winning {
-            background: linear-gradient(145deg, #f5af19, #f12711);
-            animation: pulse 0.5s ease;
-        }
-        @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .cell:active { transform: scale(0.95); }
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-        .action-btn {
+        button {
             border: none;
-            padding: 10px 22px;
-            border-radius: 50px;
-            font-weight: bold;
+            background: var(--btn-bg);
+            padding: 18px 0;
+            border-radius: 40px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--btn-text);
+            font-family: monospace;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.05s linear;
+            box-shadow: 0 2px 6px var(--shadow);
         }
-        .action-btn.reset {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-            color: white;
+        button:active {
+            transform: scale(0.96);
         }
-        .action-btn.clear {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
+        .operator {
+            background: var(--btn-op-bg);
+            color: var(--btn-op-text);
+            font-size: 1.7rem;
         }
-        .winner-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 50px;
-            padding: 15px 30px;
-            color: white;
-            font-size: 1.3rem;
-            font-weight: bold;
-            z-index: 100;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: slideIn 0.3s ease;
-            border: 2px solid #f5af19;
-            text-align: center;
+        .func {
+            background: var(--btn-func-bg);
+            color: var(--btn-func-text);
+            font-size: 1.2rem;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .equal {
+            background: var(--btn-op-bg);
+            color: var(--btn-op-text);
+            font-size: 1.8rem;
         }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #000000dd;
-            z-index: 2000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
         }
         .modal-content {
-            background: #fff6e5;
-            border-radius: 55px;
+            background: var(--card-bg);
+            width: 85%;
             max-width: 320px;
-            padding: 25px;
-            color: #1f4916;
-            text-align: right;
-            direction: rtl;
+            border-radius: 40px;
+            padding: 28px 22px;
+            text-align: center;
+            color: var(--display-text);
+            box-shadow: 0 20px 40px black;
         }
-        body.dark .modal-content {
-            background: #1e2a2e;
-            color: #ffecb3;
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+        .theme-toggle {
+            display: flex;
+            justify-content: space-between;
+            background: var(--btn-func-bg);
+            border-radius: 60px;
+            padding: 6px;
+            margin: 20px 0;
+        }
+        .theme-btn {
+            flex: 1;
+            background: transparent;
+            box-shadow: none;
+            padding: 10px;
+            margin: 0 4px;
+            border-radius: 40px;
+            font-size: 1rem;
+        }
+        .theme-btn.active {
+            background: var(--btn-op-bg);
+            color: var(--btn-op-text);
+        }
+        .modal-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--btn-func-bg);
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 60px;
+            text-decoration: none;
+            color: var(--display-text);
+            font-weight: bold;
         }
         .close-modal {
-            background: #b45f1b;
-            color: white;
-            padding: 8px 18px;
-            border-radius: 35px;
-            text-align: center;
-            margin-top: 18px;
+            background: var(--btn-op-bg);
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            border: none;
             cursor: pointer;
         }
-        @media (max-width: 480px) {
-            .cell { font-size: 2.2rem; }
-            .board { gap: 8px; }
-            .game-title { font-size: 1.3rem; }
+        @media (max-width: 420px) {
+            button { padding: 14px 0; font-size: 1.2rem; }
+            .result { font-size: 1.8rem; }
         }
     </style>
 </head>
-<body class="dark">
-<div class="game-wrapper">
-    <div class="game-container">
-        <div class="game-header">
-            <div class="game-title">⚡ دوز ⚡</div>
-            <div class="header-buttons">
-                <button class="icon-btn" id="themeBtn">🌓</button>
-                <button class="icon-btn" id="helpBtn">❓</button>
-            </div>
-        </div>
-        
-        <div class="mode-selector">
-            <div class="mode-btn" data-mode="ai">🤖 vs ربات</div>
-            <div class="mode-btn active" data-mode="two">👥 دو نفره</div>
-        </div>
-        
-        <div class="score-board">
-            <div class="score"><div class="score-label">❌ بازیکن X</div><div class="score-value x" id="scoreX">0</div></div>
-            <div class="score"><div class="score-label">🎮 تعداد بازی‌ها</div><div class="score-value" id="gamesPlayed">0</div></div>
-            <div class="score"><div class="score-label">⭕ بازیکن O</div><div class="score-value o" id="scoreO">0</div></div>
-        </div>
-        
-        <div class="turn-indicator"><span class="turn-text">نوبت:</span><span class="turn-symbol" id="turnSymbol">❌</span></div>
-        
-        <div class="board" id="board"></div>
-        
-        <div class="action-buttons">
-            <button class="action-btn reset" id="resetBtn">🔄 بازی جدید</button>
-            <button class="action-btn clear" id="clearScoreBtn">🗑️ ریست امتیازها</button>
-        </div>
+<body>
+
+<div class="calculator">
+    <div class="header">
+        <div class="logo">⚡ SAL ⚡</div>
+        <button class="settings-btn" id="settingsBtn">⚙️</button>
+    </div>
+
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
+    </div>
+
+    <div class="buttons">
+        <button class="func" data-action="clear">C</button>
+        <button class="func" data-action="back">⌫</button>
+        <button class="func" data-action="percent">%</button>
+        <button class="operator" data-op="/">÷</button>
+        <button data-num="7">7</button>
+        <button data-num="8">8</button>
+        <button data-num="9">9</button>
+        <button class="operator" data-op="*">×</button>
+        <button data-num="4">4</button>
+        <button data-num="5">5</button>
+        <button data-num="6">6</button>
+        <button class="operator" data-op="-">−</button>
+        <button data-num="1">1</button>
+        <button data-num="2">2</button>
+        <button data-num="3">3</button>
+        <button class="operator" data-op="+">+</button>
+        <button data-num="0">0</button>
+        <button data-num="00">00</button>
+        <button data-num=".">.</button>
+        <button class="equal" data-action="equal">=</button>
     </div>
 </div>
 
-<div id="ruleModal" class="modal">
+<div id="settingsModal" class="modal">
     <div class="modal-content">
-        <h3>📖 راهنمای بازی دوز</h3>
-        <p>🎯 هر بازیکن به نوبت علامت X یا O رو در خانه‌های خالی می‌گذاره.</p>
-        <p>✅ کسی که تونست <strong>3 تا از علامتش رو در یک خط</strong> (افقی، عمودی یا مورب) قرار بده، برنده میشه.</p>
-        <p>🤖 <strong>حالت ربات:</strong> ربات مبتدی هست و گاهی اشتباه می‌کنه!</p>
-        <p>👥 <strong>حالت دو نفره:</strong> با دوستت روی یک گوشی بازی کن.</p>
-        <p>🌓 دکمه بالا سمت راست برای تغییر تم تاریک/روشن.</p>
-        <div class="close-modal" id="closeRules">باشه فهمیدم</div>
+        <h3>⚙️ تنظیمات</h3>
+        <div class="theme-toggle">
+            <button class="theme-btn" id="lightThemeBtn">🌞 روز</button>
+            <button class="theme-btn" id="darkThemeBtn">🌙 شب</button>
+        </div>
+        <a href="https://rubika.ir/GrimZone" target="_blank" class="modal-link">
+            📱 کانال روبیکا
+        </a>
+        <button class="close-modal" id="closeModal">بستن</button>
     </div>
 </div>
 
 <script>
-    let board = Array(9).fill(null);
-    let currentPlayer = 'X';
-    let gameActive = true;
-    let mode = 'two';
-    let scoreX = 0, scoreO = 0, gamesCount = 0;
-    
-    const boardElement = document.getElementById('board');
-    const scoreXEl = document.getElementById('scoreX');
-    const scoreOEl = document.getElementById('scoreO');
-    const gamesPlayedEl = document.getElementById('gamesPlayed');
-    const turnSymbolEl = document.getElementById('turnSymbol');
-    
-    const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    
-    function createBoard() {
-        boardElement.innerHTML = '';
-        for(let i = 0; i < 9; i++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            if(board[i]) { 
-                cell.classList.add(board[i]); 
-                cell.textContent = board[i]; 
+    // ---------- ماشین حساب ----------
+    const expressionDiv = document.getElementById('expression');
+    const resultDiv = document.getElementById('result');
+    let currentInput = "";
+    let lastResult = null;
+    let justCalculated = false;
+
+    function updateDisplay() {
+        if(currentInput === "") {
+            expressionDiv.innerText = "";
+            if(lastResult !== null && !justCalculated) {
+                resultDiv.innerText = lastResult;
+            } else {
+                resultDiv.innerText = "0";
             }
-            cell.addEventListener('click', () => handleCellClick(i));
-            boardElement.appendChild(cell);
-        }
-    }
-    
-    function checkWinner() {
-        for(let pattern of winPatterns) {
-            const [a,b,c] = pattern;
-            if(board[a] && board[a] === board[b] && board[a] === board[c])
-                return { winner: board[a], line: pattern };
-        }
-        if(board.every(cell => cell !== null)) return { winner: 'tie', line: null };
-        return null;
-    }
-    
-    function showWinnerMessage(msg) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'winner-message';
-        msgDiv.textContent = msg;
-        document.body.appendChild(msgDiv);
-        setTimeout(() => msgDiv.remove(), 1800);
-    }
-    
-    function highlightWinningLine(line) {
-        if(!line) return;
-        const cells = document.querySelectorAll('.cell');
-        line.forEach(idx => cells[idx].classList.add('winning'));
-    }
-    
-    function updateScoreBoard() {
-        scoreXEl.textContent = scoreX;
-        scoreOEl.textContent = scoreO;
-        gamesPlayedEl.textContent = gamesCount;
-    }
-    
-    function updateTurnDisplay() {
-        if(gameActive) {
-            turnSymbolEl.textContent = currentPlayer === 'X' ? '❌' : '⭕';
-            turnSymbolEl.style.color = currentPlayer === 'X' ? '#4ecdc4' : '#ff6b6b';
         } else {
-            turnSymbolEl.textContent = '🏁';
-            turnSymbolEl.style.color = '#f5af19';
+            expressionDiv.innerText = currentInput;
+            if(!justCalculated) resultDiv.innerText = "?";
+        }
+        if(justCalculated && lastResult !== null) {
+            resultDiv.innerText = lastResult;
         }
     }
-    
-    function afterMove() {
-        const result = checkWinner();
-        if(result) {
-            gameActive = false;
-            if(result.winner === 'X') { 
-                scoreX++; 
-                showWinnerMessage('🎉 بازیکن X برنده شد! 🎉'); 
-                highlightWinningLine(result.line); 
-            }
-            else if(result.winner === 'O') { 
-                scoreO++; 
-                showWinnerMessage('🎉 بازیکن O برنده شد! 🎉'); 
-                highlightWinningLine(result.line); 
-            }
-            else { 
-                showWinnerMessage('🤝 مساوی شد! 🤝'); 
-            }
-            gamesCount++;
-            updateScoreBoard();
-            return true;
-        }
-        return false;
+
+    function evaluateExpression(expr) {
+        try {
+            let processed = expr.replace(/÷/g, '/').replace(/×/g, '*');
+            processed = processed.replace(/(\d+(?:\.\d+)?)%/g, (match, num) => parseFloat(num)/100);
+            if(/[^0-9+\-*/%. ]/.test(processed)) throw new Error();
+            const calcFunc = new Function('return (' + processed + ')');
+            let result = calcFunc();
+            if(isNaN(result) || !isFinite(result)) throw new Error();
+            return parseFloat(result.toFixed(10));
+        } catch(e) { return null; }
     }
-    
-    function makeMove(index, player) {
-        if(!gameActive) return false;
-        if(board[index] !== null) return false;
-        if(currentPlayer !== player) return false;
-        
-        board[index] = player;
-        createBoard();
-        
-        if(afterMove()) return true;
-        
-        currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
-        updateTurnDisplay();
-        
-        if(mode === 'ai' && gameActive && currentPlayer === 'O') {
-            setTimeout(() => stupidAiMove(), 280);
-        }
-        return true;
-    }
-    
-    // ربات مبتدی و کم هوش (گاهی حرکت تصادفی می‌کند)
-    function stupidAiMove() {
-        if(!gameActive || currentPlayer !== 'O') return;
-        
-        // 40% شانس حرکت کاملاً تصادفی (اشتباه کردن)
-        const randomChance = Math.random();
-        if(randomChance < 0.4) {
-            let empty = [];
-            for(let i=0;i<9;i++) if(board[i]===null) empty.push(i);
-            if(empty.length > 0) {
-                let randomIndex = empty[Math.floor(Math.random() * empty.length)];
-                makeMove(randomIndex, 'O');
+
+    function calculate() {
+        if(currentInput === "") {
+            if(lastResult !== null) {
+                currentInput = String(lastResult);
+                justCalculated = false;
+                updateDisplay();
             }
             return;
         }
-        
-        // اولویت: وسط > گوشه‌ها > بقیه
-        const priority = [4, 0, 2, 6, 8, 1, 3, 5, 7];
-        for(let i of priority) {
-            if(board[i] === null) {
-                makeMove(i, 'O');
-                return;
+        const res = evaluateExpression(currentInput);
+        if(res !== null) {
+            lastResult = res;
+            resultDiv.innerText = res;
+            justCalculated = true;
+            updateDisplay();
+        } else {
+            resultDiv.innerText = "خطا";
+            setTimeout(() => {
+                if(!justCalculated) resultDiv.innerText = "?";
+                else resultDiv.innerText = lastResult;
+            }, 800);
+        }
+    }
+
+    function addInput(value) {
+        if(justCalculated) {
+            if(/[0-9.]/.test(value)) {
+                currentInput = value;
+                justCalculated = false;
+                lastResult = null;
+            } else if(value === '+' || value === '-' || value === '*' || value === '/' || value === '÷' || value === '×') {
+                if(lastResult !== null) {
+                    currentInput = String(lastResult) + value;
+                    justCalculated = false;
+                    lastResult = null;
+                } else { currentInput = value; justCalculated = false; }
+            } else { currentInput = value; justCalculated = false; }
+            updateDisplay();
+            return;
+        }
+        if(value === '.') {
+            let lastNumber = currentInput.split(/[\+\-\*\/÷×%]/).pop();
+            if(lastNumber.includes('.')) return;
+        }
+        const lastChar = currentInput.slice(-1);
+        const ops = ['+','-','*','/','÷','×','%'];
+        if(ops.includes(lastChar) && ops.includes(value)) {
+            currentInput = currentInput.slice(0, -1) + value;
+        } else {
+            currentInput += value;
+        }
+        justCalculated = false;
+        updateDisplay();
+    }
+
+    function clearAll() { currentInput = ""; lastResult = null; justCalculated = false; updateDisplay(); }
+    function backspace() {
+        if(justCalculated) { clearAll(); return; }
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
+    }
+    function applyPercent() {
+        if(justCalculated && lastResult !== null) {
+            currentInput = String(lastResult);
+            justCalculated = false;
+        }
+        if(currentInput === "") return;
+        try {
+            let expr = currentInput.replace(/÷/g, '/').replace(/×/g, '*');
+            let val = new Function('return (' + expr + ')')();
+            if(!isNaN(val) && isFinite(val)) {
+                currentInput = String(val / 100);
+                updateDisplay();
+            } else throw new Error();
+        } catch(e) {
+            const parts = currentInput.split(/[\+\-\*\/÷×]/);
+            let lastNum = parts[parts.length-1];
+            if(lastNum && !isNaN(parseFloat(lastNum))) {
+                let percentNum = parseFloat(lastNum)/100;
+                currentInput = currentInput.slice(0, -lastNum.length) + percentNum;
+                updateDisplay();
             }
         }
+        justCalculated = false;
     }
-    
-    function handleCellClick(index) {
-        if(mode === 'ai') {
-            if(currentPlayer === 'X') makeMove(index, 'X');
+
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(btn.hasAttribute('data-action')) {
+                const act = btn.getAttribute('data-action');
+                if(act === 'clear') clearAll();
+                else if(act === 'back') backspace();
+                else if(act === 'equal') calculate();
+                else if(act === 'percent') applyPercent();
+                return;
+            }
+            if(btn.hasAttribute('data-num')) addInput(btn.getAttribute('data-num'));
+            if(btn.hasAttribute('data-op')) addInput(btn.getAttribute('data-op'));
+        });
+    });
+
+    // ---------- مودال تنظیمات و تم ----------
+    const modal = document.getElementById('settingsModal');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const closeModal = document.getElementById('closeModal');
+    const lightBtn = document.getElementById('lightThemeBtn');
+    const darkBtn = document.getElementById('darkThemeBtn');
+
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModalFunc() { modal.style.display = 'none'; }
+
+    settingsBtn.addEventListener('click', openModal);
+    closeModal.addEventListener('click', closeModalFunc);
+    modal.addEventListener('click', (e) => { if(e.target === modal) closeModalFunc(); });
+
+    function setTheme(theme) {
+        if(theme === 'dark') {
+            document.body.classList.add('dark');
+            localStorage.setItem('calTheme', 'dark');
+            darkBtn.classList.add('active');
+            lightBtn.classList.remove('active');
         } else {
-            makeMove(index, currentPlayer);
+            document.body.classList.remove('dark');
+            localStorage.setItem('calTheme', 'light');
+            lightBtn.classList.add('active');
+            darkBtn.classList.remove('active');
         }
     }
-    
-    function resetGame() {
-        board = Array(9).fill(null);
-        gameActive = true;
-        currentPlayer = 'X';
-        createBoard();
-        updateTurnDisplay();
-        document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('winning'));
-        if(mode === 'ai' && currentPlayer === 'O') setTimeout(() => stupidAiMove(), 150);
-    }
-    
-    function clearScores() {
-        scoreX = 0; 
-        scoreO = 0; 
-        gamesCount = 0;
-        updateScoreBoard();
-        resetGame();
-    }
-    
-    function setMode(newMode) {
-        mode = newMode;
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            if(btn.dataset.mode === mode) btn.classList.add('active');
-            else btn.classList.remove('active');
-        });
-        resetGame();
-    }
-    
-    // تم تاریک/روشن
-    function toggleTheme() {
-        const body = document.body;
-        if(body.classList.contains('dark')) {
-            body.classList.remove('dark');
-            body.classList.add('light');
-        } else {
-            body.classList.remove('light');
-            body.classList.add('dark');
-        }
-    }
-    
-    function init() {
-        createBoard();
-        updateTurnDisplay();
-        updateScoreBoard();
-        
-        document.getElementById('resetBtn').onclick = resetGame;
-        document.getElementById('clearScoreBtn').onclick = clearScores;
-        document.getElementById('themeBtn').onclick = toggleTheme;
-        document.getElementById('helpBtn').onclick = () => document.getElementById('ruleModal').style.display = 'flex';
-        document.getElementById('closeRules').onclick = () => document.getElementById('ruleModal').style.display = 'none';
-        window.onclick = (e) => { if(e.target === document.getElementById('ruleModal')) document.getElementById('ruleModal').style.display = 'none'; };
-        
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.onclick = () => setMode(btn.dataset.mode);
-        });
-    }
-    
-    init();
+
+    lightBtn.addEventListener('click', () => setTheme('light'));
+    darkBtn.addEventListener('click', () => setTheme('dark'));
+
+    const savedTheme = localStorage.getItem('calTheme');
+    if(savedTheme === 'dark') setTheme('dark');
+    else setTheme('light');
 </script>
 </body>
 </html>
