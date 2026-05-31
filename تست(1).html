@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>ویدوکس AI | هوش مصنوعی حرفه‌ای</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, 'Segoe UI', 'Google Sans', sans-serif;
+            background: #1e1e2f;
+            color: #eef2ff;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* ========== MAIN APP LAYOUT ========== */
+        .app {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: #252536;
+            border-left: 1px solid #3a3a4a;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 200;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+        }
+        .sidebar.open { right: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #3a3a4a; }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #2a2a3a;
+            padding: 12px;
+            border-radius: 32px;
+        }
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #10a37f, #1a7f64);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .user-info { flex: 1; }
+        .user-name { font-weight: 600; font-size: 1rem; }
+        .edit-name { font-size: 0.7rem; color: #a0a0b0; cursor: pointer; }
+        .new-chat-sidebar {
+            background: #10a37f;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 40px;
+            width: 100%;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .chats-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 12px;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 16px;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+        .chat-item:hover { background: #3a3a4a; }
+        .chat-item.active { background: #10a37f; }
+        .chat-title {
+            flex: 1;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+        }
+        .chat-item:hover .chat-actions { opacity: 1; }
+        .chat-actions button {
+            background: none;
+            border: none;
+            color: #a0a0b0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .sidebar-footer { padding: 20px; border-top: 1px solid #3a3a4a; }
+        .settings-btn-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .delete-all-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* ========== MAIN CHAT AREA ========== */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e2f;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Header */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: #2a2a3a;
+            border-bottom: 1px solid #3a3a4a;
+            flex-shrink: 0;
+        }
+        .menu-icon {
+            background: none;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .menu-icon span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+        }
+        .menu-icon span:nth-child(2) { width: 12px; align-self: flex-start; }
+        .upgrade-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-radius: 40px;
+            padding: 4px 8px;
+        }
+        .header-icon {
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.3rem;
+        }
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: #4a4a5a;
+            margin: 0 4px;
+        }
+
+        /* Messages Container */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+        .welcome-logo { font-size: 4rem; margin-bottom: 16px; }
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #10a37f, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .welcome-sub { margin: 12px 0 24px; color: #a0a0b0; }
+        .suggestion-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .suggestion-card {
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-radius: 28px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .suggestion-card:hover { background: #3a3a4a; }
+
+        /* Message Bubbles */
+        .message-row {
+            display: flex;
+            width: 100%;
+            animation: fadeInUp 0.2s ease;
+        }
+        .user-row { justify-content: flex-end; }
+        .ai-row { justify-content: flex-start; }
+        .bubble {
+            max-width: 80%;
+            padding: 10px 16px;
+            border-radius: 26px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        .user-bubble {
+            background: #10a37f;
+            color: white;
+            border-bottom-left-radius: 6px;
+        }
+        .ai-bubble {
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-bottom-right-radius: 6px;
+        }
+        .bubble pre {
+            background: #1a1a2a;
+            padding: 12px;
+            border-radius: 16px;
+            overflow-x: auto;
+            margin: 8px 0;
+            position: relative;
+        }
+        .bubble code { font-family: monospace; font-size: 0.85rem; }
+        .copy-code-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #3a3a4a;
+            border: none;
+            border-radius: 12px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .message-time {
+            font-size: 0.65rem;
+            color: #a0a0b0;
+            margin-top: 4px;
+        }
+
+        /* Message Actions (Like, Dislike, Copy) below AI messages */
+        .message-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            justify-content: flex-start;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        .message-row:hover .message-footer { opacity: 1; }
+        .footer-action {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            color: #a0a0b0;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .footer-action:hover { background: #3a3a4a; color: white; }
+        .footer-action.active { color: #10a37f; }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-radius: 20px;
+            padding: 8px;
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            min-width: 180px;
+        }
+        .context-item {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        .context-item:hover { background: #3a3a4a; }
+
+        /* Input Area */
+        .input-container {
+            padding: 16px;
+            background: #1e1e2f;
+            border-top: 1px solid #3a3a4a;
+            flex-shrink: 0;
+        }
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #2a2a3a;
+            border: 1px solid #3a3a4a;
+            border-radius: 32px;
+            padding: 8px 16px;
+        }
+        .input-wrapper textarea {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            max-height: 120px;
+            padding: 8px 0;
+        }
+        .attach-btn, .send-btn {
+            background: none;
+            border: none;
+            color: #a0a0b0;
+            font-size: 1.3rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .send-btn {
+            background: #10a37f;
+            color: white;
+        }
+
+        /* Settings Modal - Advanced */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-card {
+            background: #2a2a3a;
+            border-radius: 32px;
+            padding: 24px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .modal-card input, .modal-card select {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            background: #3a3a4a;
+            border: none;
+            border-radius: 40px;
+            color: white;
+        }
+        .setting-group {
+            text-align: right;
+            margin: 16px 0;
+        }
+        .setting-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: #a0a0b0;
+        }
+        .modal-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10a37f;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 3000;
+            animation: fadeOut 2s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 550px) {
+            .bubble { max-width: 90%; }
+            .suggestion-cards { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="user-profile" id="userProfileSidebar">
+                <div class="user-avatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebarUserName">ماهان</div>
+                    <div class="edit-name" id="editNameSidebar">ویرایش</div>
+                </div>
+            </div>
+            <button class="new-chat-sidebar" id="newChatSidebarBtn">➕ چت جدید</button>
+        </div>
+        <div class="chats-list" id="chatsListSidebar"></div>
+        <div class="sidebar-footer">
+            <button class="settings-btn-sidebar" id="openSettingsBtn"><span class="material-icons">settings</span> تنظیمات</button>
+            <button class="delete-all-btn" id="deleteAllChatsBtn"><span class="material-icons">delete_sweep</span> حذف همه گفتگوها</button>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="main-area">
+        <div class="chat-header">
+            <button class="menu-icon" id="menuToggleBtn"><span></span><span></span></button>
+            <button class="upgrade-btn">✨ ارتقا بسته</button>
+            <div class="header-actions">
+                <button class="header-icon" id="newChatHeaderBtn"><span class="material-icons">add_comment</span></button>
+                <div class="divider"></div>
+                <button class="header-icon" id="headerMoreBtn"><span class="material-icons">more_vert</span></button>
+            </div>
+        </div>
+
+        <div class="messages-area" id="messagesArea"></div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <button class="attach-btn" id="attachBtn"><span class="material-icons">attach_file</span></button>
+                <textarea id="messageInput" placeholder="پیام خود را بنویسید..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn"><span class="material-icons">send</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-card">
+        <h3>تنظیمات پیشرفته</h3>
+        <div class="setting-group">
+            <label>نام کاربر</label>
+            <input type="text" id="userNameInput" placeholder="نام شما">
+        </div>
+        <div class="setting-group">
+            <label>علایق و شخصیت</label>
+            <input type="text" id="personalityInput" placeholder="مثال: برنامه‌نویس، دانشجو، علاقه‌مند به AI">
+        </div>
+        <div class="setting-group">
+            <label>زبان برنامه</label>
+            <select id="languageSelect">
+                <option value="fa">فارسی</option>
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+            </select>
+        </div>
+        <div class="setting-group">
+            <label>تم</label>
+            <div style="display: flex; gap: 12px;">
+                <button id="lightThemeBtn" style="flex:1; background:#3a3a4a; border:none; padding:8px; border-radius:40px; color:white;">🌞 روشن</button>
+                <button id="darkThemeBtn" style="flex:1; background:#10a37f; border:none; padding:8px; border-radius:40px; color:white;">🌙 تاریک</button>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button id="saveSettingsBtn" style="background:#10a37f; padding:8px 20px; border:none; border-radius:40px; color:white;">ذخیره</button>
+            <button id="closeSettingsBtn" style="background:#4a4a5a; padding:8px 20px; border:none; border-radius:40px; color:white;">بستن</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- API CONFIG ----------
+    const API_KEY = "sk-4NLbvHXJrYqRKKb4gxNFIHppAkZ91W5OZc0AFYchKEgqLL9w";
+    const API_URL = "https://api.gapgpt.app/v1/chat/completions";
+    const MODEL = "gapgpt-qwen-3.5";
+
+    // ---------- ADS CONFIG ----------
+    const ADS_URL = "https://raw.githubusercontent.com/mahanyosefi139000-del/Tab/main/%D8%AA%D8%A8%D9%84%DB%8C%D8%BA%D8%A7%D8%AA(1).json";
+    let adsList = [];
+    let messageCount = 0;
+    let adSettings = { show_after_messages: 2 };
+
+    async function loadAds() {
+        try {
+            const response = await fetch(ADS_URL);
+            const data = await response.json();
+            adsList = data.ads || [];
+            adSettings = data.settings || { show_after_messages: 2 };
+        } catch(err) { console.log("خطا در دریافت تبلیغات"); }
+    }
+
+    function getRandomAd() {
+        if (adsList.length === 0) return null;
+        return adsList[Math.floor(Math.random() * adsList.length)];
+    }
+
+    function addAdBanner() {
+        const ad = getRandomAd();
+        if (!ad) return;
+        const container = document.getElementById("messagesArea");
+        const adDiv = document.createElement("div");
+        adDiv.className = "message-row ai-row";
+        adDiv.innerHTML = `
+            <div class="bubble ai-bubble" style="background: ${ad.color}20; border-color: ${ad.color}; text-align: center; padding: 8px 12px;">
+                <a href="${ad.link}" target="_blank" style="color: ${ad.color}; text-decoration: none; font-weight: bold;">
+                    ${ad.emoji || '📢'} ${ad.text}
+                </a>
+            </div>
+        `;
+        container.appendChild(adDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ---------- APP STATE ----------
+    let chats = [];
+    let currentChatId = null;
+    let isLoading = false;
+    let currentContextMenu = null;
+    let userName = localStorage.getItem("vidox_userName") || "ماهان";
+    let userPersonality = localStorage.getItem("vidox_personality") || "";
+    let userLanguage = localStorage.getItem("vidox_language") || "fa";
+    let isDarkTheme = localStorage.getItem("vidox_theme") !== "light";
+
+    // ---------- UTILS ----------
+    function showToast(msg) {
+        let t = document.createElement("div");
+        t.className = "toast";
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+    }
+
+    function escapeHtml(str) {
+        if(!str) return "";
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    function formatMessage(content) {
+        if(!content) return "";
+        let formatted = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/```(.*?)```/gs, (match, code) => `<pre><code class="language-plaintext">${escapeHtml(code)}</code></pre>`)
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            .replace(/\n/g, '<br>')
+            .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#10a37f">$1</a>');
+        return formatted;
+    }
+
+    function setTheme(isDark) {
+        if(isDark) {
+            document.body.style.background = "#1e1e2f";
+            document.querySelector(".main-area").style.background = "#1e1e2f";
+        } else {
+            document.body.style.background = "#f7f7f8";
+            document.querySelector(".main-area").style.background = "#f7f7f8";
+        }
+        isDarkTheme = isDark;
+        localStorage.setItem("vidox_theme", isDark ? "dark" : "light");
+    }
+
+    // ---------- CHAT MANAGEMENT ----------
+    function saveChats() {
+        localStorage.setItem("vidox_chats", JSON.stringify(chats));
+        renderChatList();
+    }
+
+    function renderChatList() {
+        const container = document.getElementById("chatsListSidebar");
+        if(!container) return;
+        container.innerHTML = chats.map(chat => `
+            <div class="chat-item ${currentChatId === chat.id ? 'active' : ''}" data-id="${chat.id}">
+                <div class="chat-title">${escapeHtml(chat.title)}</div>
+                <div class="chat-actions">
+                    <button class="rename-chat" data-id="${chat.id}"><span class="material-icons">edit</span></button>
+                    <button class="delete-chat" data-id="${chat.id}"><span class="material-icons">delete</span></button>
+                </div>
+            </div>
+        `).join("");
+        document.querySelectorAll(".chat-item").forEach(el => {
+            el.addEventListener("click", (e) => {
+                if(e.target.closest(".rename-chat") || e.target.closest(".delete-chat")) return;
+                const id = parseInt(el.dataset.id);
+                if(!isNaN(id)) switchChat(id);
+            });
+        });
+        document.querySelectorAll(".rename-chat").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                renameChat(id);
+            });
+        });
+        document.querySelectorAll(".delete-chat").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                deleteChat(id);
+            });
+        });
+    }
+
+    function renameChat(id) {
+        const chat = chats.find(c => c.id === id);
+        if(!chat) return;
+        let newName = prompt("نام جدید:", chat.title);
+        if(newName && newName.trim()) {
+            chat.title = newName.trim();
+            saveChats();
+            showToast("نام چت تغییر کرد");
+        }
+    }
+
+    function deleteChat(id) {
+        if(chats.length === 1) {
+            showToast("حداقل یک چت باید باقی بماند");
+            return;
+        }
+        chats = chats.filter(c => c.id !== id);
+        if(currentChatId === id) currentChatId = chats[0].id;
+        saveChats();
+        renderCurrentChat();
+        showToast("چت حذف شد");
+    }
+
+    function deleteAllChats() {
+        if(chats.length <= 1) {
+            showToast("چت جدیدی برای حذف وجود ندارد");
+            return;
+        }
+        if(confirm("آیا از حذف همه گفتگوها مطمئن هستید؟")) {
+            let firstChat = chats[0];
+            chats = [firstChat];
+            firstChat.title = "چت جدید";
+            firstChat.messages = [];
+            currentChatId = firstChat.id;
+            saveChats();
+            renderCurrentChat();
+            showToast("همه گفتگوها حذف شدند");
+        }
+    }
+
+    function switchChat(id) {
+        currentChatId = id;
+        renderChatList();
+        renderCurrentChat();
+    }
+
+    function createNewChat() {
+        let newChat = {
+            id: Date.now(),
+            title: "چت جدید",
+            messages: []
+        };
+        chats.unshift(newChat);
+        currentChatId = newChat.id;
+        saveChats();
+        renderCurrentChat();
+        showToast("چت جدید ساخته شد");
+    }
+
+    function updateChatTitle() {
+        let chat = chats.find(c => c.id === currentChatId);
+        if(chat && chat.title === "چت جدید" && chat.messages.length > 0) {
+            let firstUser = chat.messages.find(m => m.role === 'user')?.content;
+            if(firstUser) {
+                chat.title = firstUser.substring(0, 25) + (firstUser.length > 25 ? "…" : "");
+                saveChats();
+            }
+        }
+    }
+
+    // ---------- RENDER MESSAGES ----------
+    function renderCurrentChat() {
+        let chat = chats.find(c => c.id === currentChatId);
+        let container = document.getElementById("messagesArea");
+        if(!chat || !container) return;
+        if(chat.messages.length === 0) {
+            container.innerHTML = `
+                <div class="welcome-screen">
+                    <div class="welcome-logo">✨</div>
+                    <div class="welcome-title">ویدوکس AI</div>
+                    <div class="welcome-sub">امروز چه کمکی می‌توانم بکنم؟</div>
+                    <div class="suggestion-cards">
+                        <div class="suggestion-card" data-suggest="ساخت ربات تلگرام">🤖 ساخت ربات تلگرام</div>
+                        <div class="suggestion-card" data-suggest="آموزش پایتون">🐍 آموزش پایتون</div>
+                        <div class="suggestion-card" data-suggest="طراحی وبسایت">🌐 طراحی وبسایت</div>
+                    </div>
+                </div>
+            `;
+            document.querySelectorAll('.suggestion-card').forEach(card => {
+                card.addEventListener('click', () => sendMessageToAPI(card.getAttribute('data-suggest')));
+            });
+            return;
+        }
+        container.innerHTML = chat.messages.map((msg, idx) => `
+            <div class="message-row ${msg.role === 'user' ? 'user-row' : 'ai-row'}" data-msg-idx="${idx}" data-role="${msg.role}" data-content="${escapeHtml(msg.content)}">
+                <div class="bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}">
+                    ${msg.role === 'assistant' ? formatMessage(escapeHtml(msg.content)) : escapeHtml(msg.content)}
+                    <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'})}</div>
+                    ${msg.role === 'assistant' ? `
+                    <div class="message-footer">
+                        <button class="footer-action copy-msg" data-msg-idx="${idx}"><span class="material-icons" style="font-size:1rem;">content_copy</span> کپی</button>
+                        <button class="footer-action like-msg ${msg.userLiked ? 'active' : ''}" data-msg-idx="${idx}"><span class="material-icons" style="font-size:1rem;">thumb_up</span></button>
+                        <button class="footer-action dislike-msg ${msg.userDisliked ? 'active' : ''}" data-msg-idx="${idx}"><span class="material-icons" style="font-size:1rem;">thumb_down</span></button>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `).join("");
+        container.scrollTop = container.scrollHeight;
+
+        document.querySelectorAll('pre code').forEach(block => {
+            hljs.highlightElement(block);
+            let pre = block.parentElement;
+            if(pre && !pre.querySelector('.copy-code-btn')) {
+                let btn = document.createElement('button');
+                btn.className = 'copy-code-btn';
+                btn.innerText = '📋 کپی';
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(block.innerText);
+                    showToast("کد کپی شد");
+                };
+                pre.style.position = 'relative';
+                pre.appendChild(btn);
+            }
+        });
+
+        // Footer actions
+        document.querySelectorAll(".copy-msg").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const idx = parseInt(btn.dataset.msgIdx);
+                const msg = chat.messages[idx];
+                if(msg) { navigator.clipboard.writeText(msg.content); showToast("کپی شد"); }
+            });
+        });
+        document.querySelectorAll(".like-msg").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const idx = parseInt(btn.dataset.msgIdx);
+                const msg = chat.messages[idx];
+                if(msg) {
+                    if(msg.userLiked) { msg.userLiked = false; }
+                    else { if(msg.userDisliked) msg.userDisliked = false; msg.userLiked = true; }
+                    saveChats(); renderCurrentChat(); showToast("نظر شما ثبت شد");
+                }
+            });
+        });
+        document.querySelectorAll(".dislike-msg").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const idx = parseInt(btn.dataset.msgIdx);
+                const msg = chat.messages[idx];
+                if(msg) {
+                    if(msg.userDisliked) { msg.userDisliked = false; }
+                    else { if(msg.userLiked) msg.userLiked = false; msg.userDisliked = true; }
+                    saveChats(); renderCurrentChat(); showToast("نظر شما ثبت شد");
+                }
+            });
+        });
+
+        attachContextMenuToMessages();
+    }
+
+    function attachContextMenuToMessages() {
+        document.querySelectorAll('.message-row').forEach(el => {
+            el.removeEventListener('contextmenu', (e) => {});
+            el.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if(currentContextMenu) currentContextMenu.remove();
+                let idx = parseInt(el.dataset.msgIdx);
+                let chat = chats.find(c => c.id === currentChatId);
+                let msg = chat?.messages[idx];
+                if(!msg) return;
+                let menu = document.createElement('div');
+                menu.className = 'context-menu';
+                menu.style.top = `${e.clientY}px`;
+                menu.style.left = `${e.clientX}px`;
+                let actions = `<div class="context-item" data-action="copy"><span class="material-icons">content_copy</span> کپی</div>
+                              <div class="context-item" data-action="select"><span class="material-icons">select_all</span> انتخاب متن</div>
+                              <div class="context-item" data-action="share"><span class="material-icons">share</span> اشتراک‌گذاری</div>`;
+                if(msg.role === 'user') {
+                    actions += `<div class="context-item" data-action="edit"><span class="material-icons">edit</span> ویرایش پیام</div>`;
+                }
+                menu.innerHTML = actions;
+                document.body.appendChild(menu);
+                currentContextMenu = menu;
+                let closeMenu = () => { menu.remove(); currentContextMenu = null; document.removeEventListener('click', closeMenu); };
+                menu.querySelector('[data-action="copy"]')?.addEventListener('click', () => {
+                    navigator.clipboard.writeText(msg.content);
+                    showToast("کپی شد");
+                    closeMenu();
+                });
+                menu.querySelector('[data-action="select"]')?.addEventListener('click', () => {
+                    let range = document.createRange();
+                    let msgEl = el.querySelector('.bubble');
+                    if(msgEl) {
+                        range.selectNodeContents(msgEl);
+                        window.getSelection()?.removeAllRanges();
+                        window.getSelection()?.addRange(range);
+                        showToast("متن انتخاب شد");
+                    }
+                    closeMenu();
+                });
+                menu.querySelector('[data-action="share"]')?.addEventListener('click', async () => {
+                    if(navigator.share) try { await navigator.share({text: msg.content}); } catch(e){}
+                    else { navigator.clipboard.writeText(msg.content); showToast("کپی شد"); }
+                    closeMenu();
+                });
+                menu.querySelector('[data-action="edit"]')?.addEventListener('click', () => {
+                    let newText = prompt("ویرایش پیام:", msg.content);
+                    if(newText && newText.trim()) {
+                        chat.messages.splice(idx, 1);
+                        saveChats();
+                        renderCurrentChat();
+                        sendMessageToAPI(newText.trim());
+                    }
+                    closeMenu();
+                });
+                setTimeout(() => document.addEventListener('click', closeMenu, {once: true}), 50);
+            });
+        });
+    }
+
+    // ---------- ADD MESSAGE & API ----------
+    function addMessage(role, content) {
+        let chat = chats.find(c => c.id === currentChatId);
+        if(chat) {
+            chat.messages.push({ role, content, timestamp: Date.now() });
+            saveChats();
+            renderCurrentChat();
+            updateChatTitle();
+            if(role === 'assistant') {
+                messageCount++;
+                if(messageCount % adSettings.show_after_messages === 0) {
+                    setTimeout(() => addAdBanner(), 300);
+                }
+            }
+        }
+    }
+
+    function showTyping() {
+        let container = document.getElementById("messagesArea");
+        let typingDiv = document.createElement('div');
+        typingDiv.className = "message-row ai-row";
+        typingDiv.id = "typingIndicator";
+        typingDiv.innerHTML = `<div class="bubble ai-bubble" style="padding:12px;"><div class="typing-indicator" style="display:flex; gap:5px;"><span style="width:8px;height:8px;background:#a0a0b0;border-radius:50%;animation:pulse 1s infinite;"></span><span style="width:8px;height:8px;background:#a0a0b0;border-radius:50%;animation:pulse 1s infinite 0.2s;"></span><span style="width:8px;height:8px;background:#a0a0b0;border-radius:50%;animation:pulse 1s infinite 0.4s;"></span></div></div>`;
+        container.appendChild(typingDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function hideTyping() {
+        let el = document.getElementById("typingIndicator");
+        if(el) el.remove();
+    }
+
+    function buildSystemPrompt() {
+        let prompt = `تو یک هوش مصنوعی مفید و دوستانه به نام ویدوکس هستی. توسط ماهان یوسف فر ساخته شده‌ای. نام کاربر ${userName} است. همیشه او را با اسم ${userName} صدا کن. اگر پرسید "سازنده‌ت کیه؟" بگو "ماهان یوسف فر". اگر پرسید "کانال روبیکا" بگو "https://rubika.ir/GrimZone".`;
+        if(userPersonality && userPersonality.trim() !== "") {
+            prompt += ` اطلاعات شخصی کاربر: ${userPersonality}. بر اساس این اطلاعات با او صحبت کن.`;
+        }
+        if(userLanguage === "en") {
+            prompt += " Answer in English language. ";
+        } else if(userLanguage === "ar") {
+            prompt += " أجب باللغة العربية. ";
+        } else if(userLanguage === "zh") {
+            prompt += " 用中文回答。 ";
+        }
+        return prompt;
+    }
+
+    async function sendMessageToAPI(userMsg) {
+        if(isLoading) return;
+        addMessage('user', userMsg);
+        showTyping();
+        isLoading = true;
+        let chat = chats.find(c => c.id === currentChatId);
+        let messages = [{ role: "system", content: buildSystemPrompt() }];
+        messages.push(...chat.messages.filter(m => m.role !== 'system').map(m => ({ role: m.role, content: m.content })));
+        try {
+            let res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
+                body: JSON.stringify({ model: MODEL, messages })
+            });
+            let data = await res.json();
+            let reply = data.choices?.[0]?.message?.content || "پاسخی دریافت نشد";
+            hideTyping();
+            addMessage('assistant', reply);
+        } catch(err) {
+            hideTyping();
+            addMessage('assistant', "خطا در ارتباط با سرور");
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    function sendMessage() {
+        let txt = document.getElementById('messageInput').value.trim();
+        if(!txt || isLoading) return;
+        document.getElementById('messageInput').value = '';
+        sendMessageToAPI(txt);
+        autoResizeTextarea();
+        setTimeout(() => {
+            let container = document.getElementById("messagesArea");
+            if(container) container.scrollTop = container.scrollHeight;
+        }, 100);
+    }
+
+    // Auto-resize textarea
+    let textarea = document.getElementById('messageInput');
+    function autoResizeTextarea() {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+    textarea.addEventListener('input', autoResizeTextarea);
+
+    // Keyboard handling
+    window.addEventListener('resize', () => {
+        let container = document.getElementById("messagesArea");
+        if(container && document.activeElement === textarea) {
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+        }
+    });
+
+    // ---------- INIT & SIDEBAR ----------
+    function loadChats() {
+        let stored = localStorage.getItem("vidox_chats");
+        if(stored) {
+            chats = JSON.parse(stored);
+        } else {
+            chats = [{ id: Date.now(), title: "چت جدید", messages: [] }];
+        }
+        if(!currentChatId && chats.length) currentChatId = chats[0].id;
+        saveChats();
+        renderCurrentChat();
+        renderChatList();
+    }
+
+    let sidebar = document.getElementById('sidebar');
+    document.getElementById('menuToggleBtn').addEventListener('click', () => sidebar.classList.toggle('open'));
+    document.getElementById('newChatSidebarBtn').addEventListener('click', createNewChat);
+    document.getElementById('newChatHeaderBtn').addEventListener('click', createNewChat);
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    textarea.addEventListener('keypress', (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+    // Settings Modal
+    let settingsModal = document.getElementById('settingsModal');
+    let openSettingsBtn = document.getElementById('openSettingsBtn');
+    let closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    let saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    let userNameInput = document.getElementById('userNameInput');
+    let personalityInput = document.getElementById('personalityInput');
+    let languageSelect = document.getElementById('languageSelect');
+    let lightThemeBtn = document.getElementById('lightThemeBtn');
+    let darkThemeBtn = document.getElementById('darkThemeBtn');
+    let sidebarUserName = document.getElementById('sidebarUserName');
+    let editNameSidebar = document.getElementById('editNameSidebar');
+    let deleteAllChatsBtn = document.getElementById('deleteAllChatsBtn');
+
+    openSettingsBtn.addEventListener('click', () => {
+        userNameInput.value = userName;
+        personalityInput.value = userPersonality;
+        languageSelect.value = userLanguage;
+        settingsModal.style.display = 'flex';
+    });
+    closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+    lightThemeBtn.addEventListener('click', () => setTheme(false));
+    darkThemeBtn.addEventListener('click', () => setTheme(true));
+    saveSettingsBtn.addEventListener('click', () => {
+        let newName = userNameInput.value.trim();
+        if(newName) {
+            userName = newName;
+            localStorage.setItem('vidox_userName', userName);
+            sidebarUserName.innerText = userName;
+        }
+        userPersonality = personalityInput.value.trim();
+        localStorage.setItem('vidox_personality', userPersonality);
+        userLanguage = languageSelect.value;
+        localStorage.setItem('vidox_language', userLanguage);
+        showToast("تنظیمات ذخیره شد");
+        settingsModal.style.display = 'none';
+    });
+    editNameSidebar.addEventListener('click', () => {
+        settingsModal.style.display = 'flex';
+        userNameInput.value = userName;
+    });
+    deleteAllChatsBtn.addEventListener('click', deleteAllChats);
+    window.onclick = (e) => { if(e.target === settingsModal) settingsModal.style.display = 'none'; };
+    document.getElementById('headerMoreBtn').addEventListener('click', () => settingsModal.style.display = 'flex');
+    document.getElementById('attachBtn').addEventListener('click', () => showToast("قابلیت آپلود عکس به زودی"));
+
+    // Load initial data
+    loadAds();
+    loadChats();
+    sidebarUserName.innerText = userName;
+    userNameInput.value = userName;
+    setTheme(isDarkTheme);
+</script>
+</body>
+</html>
