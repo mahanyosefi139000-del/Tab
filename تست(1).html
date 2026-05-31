@@ -1,173 +1,204 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>ماشین حساب خفن SAL</title>
+    <title>بازی دوز آفلاین | با دوستان</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            font-family: system-ui, 'Segoe UI', 'Google Sans', 'Roboto', sans-serif;
         }
 
-        :root {
-            --bg: #f5f5f5;
+        body.light {
+            --bg: #f0f2f5;
             --card-bg: #ffffff;
-            --display-bg: #e8e8e8;
-            --display-text: #1a1a1a;
-            --expression-text: #555;
-            --btn-bg: #ffffff;
-            --btn-text: #333;
-            --btn-op-bg: #f0a500;
-            --btn-op-text: white;
-            --btn-func-bg: #e0e0e0;
-            --btn-func-text: #333;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --border: #ddd;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-soft: #64748b;
+            --accent: #3b82f6;
+            --input-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --cell-bg: #ffffff;
+            --cell-border: #cbd5e1;
         }
 
         body.dark {
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --display-bg: #2a2a2a;
-            --display-text: #f0f0f0;
-            --expression-text: #aaa;
-            --btn-bg: #2d2d2d;
-            --btn-text: #eee;
-            --btn-op-bg: #f0a500;
-            --btn-op-text: #121212;
-            --btn-func-bg: #3a3a3a;
-            --btn-func-text: #eee;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --border: #3a3a3a;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-soft: #94a3b8;
+            --accent: #3b82f6;
+            --input-bg: #334155;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --cell-bg: #1e293b;
+            --cell-border: #475569;
         }
 
         body {
             background: var(--bg);
-            font-family: 'Segoe UI', 'Poppins', 'Roboto', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: var(--text);
+            transition: all 0.2s;
             min-height: 100vh;
             padding: 16px;
-            transition: background 0.2s ease;
         }
 
-        .calculator {
-            max-width: 380px;
-            width: 100%;
-            background: var(--card-bg);
-            border-radius: 48px;
-            padding: 24px 20px 30px;
-            box-shadow: 0 20px 40px var(--shadow);
-            transition: all 0.2s;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding: 0 4px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--btn-op-bg);
-            background: var(--btn-func-bg);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-family: monospace;
+        .title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
         }
-        .settings-btn {
-            background: var(--btn-func-bg);
-            border: none;
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .icon-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            font-size: 24px;
+            font-size: 1.3rem;
             cursor: pointer;
+            color: var(--text);
+            box-shadow: var(--shadow);
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.1s linear;
-            color: var(--btn-text);
-            box-shadow: 0 2px 5px var(--shadow);
-        }
-        .settings-btn:active {
-            transform: scale(0.94);
-        }
-
-        .display {
-            background: var(--display-bg);
-            border-radius: 32px;
-            padding: 20px 20px;
-            margin: 16px 0 24px;
-            text-align: right;
-            min-height: 130px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .expression {
-            font-size: 1.3rem;
-            color: var(--expression-text);
-            word-wrap: break-word;
-            font-family: monospace;
-            min-height: 32px;
-        }
-        .result {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: var(--display-text);
-            margin-top: 12px;
-            font-family: monospace;
-            letter-spacing: 1px;
-            word-wrap: break-word;
-        }
-
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        button {
-            border: none;
-            background: var(--btn-bg);
-            padding: 18px 0;
-            border-radius: 40px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--btn-text);
-            font-family: monospace;
+            margin: 0 auto 12px;
+            background-size: cover;
+            background-position: center;
             cursor: pointer;
-            transition: 0.05s linear;
-            box-shadow: 0 2px 6px var(--shadow);
+            font-size: 2.5rem;
         }
-        button:active {
-            transform: scale(0.96);
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
         }
-        .operator {
-            background: var(--btn-op-bg);
-            color: var(--btn-op-text);
-            font-size: 1.7rem;
+        .btn-sm {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
-        .func {
-            background: var(--btn-func-bg);
-            color: var(--btn-func-text);
-            font-size: 1.2rem;
+        .btn-outline {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
         }
-        .equal {
-            background: var(--btn-op-bg);
-            color: var(--btn-op-text);
-            font-size: 1.8rem;
+
+        .connection-card {
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .sdp-box {
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+        }
+        .flex-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .game-panel {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .turn-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 320px;
+            margin: 0 auto 20px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: var(--cell-bg);
+            border: 2px solid var(--cell-border);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+            background-size: 55%;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .cell.X { color: #4ecdc4; }
+        .cell.O { color: #ff6b6b; }
+        .cell:active { transform: scale(0.96); }
+        .game-btn {
+            background: var(--accent);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
         }
 
         .modal {
@@ -177,111 +208,91 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(4px);
         }
         .modal-content {
             background: var(--card-bg);
             width: 85%;
-            max-width: 320px;
+            max-width: 350px;
             border-radius: 40px;
-            padding: 28px 22px;
+            padding: 28px 24px;
             text-align: center;
-            color: var(--display-text);
-            box-shadow: 0 20px 40px black;
-        }
-        .modal-content h3 {
-            margin-bottom: 20px;
-            font-size: 1.6rem;
         }
         .theme-toggle {
             display: flex;
-            justify-content: space-between;
-            background: var(--btn-func-bg);
-            border-radius: 60px;
-            padding: 6px;
+            gap: 12px;
             margin: 20px 0;
         }
         .theme-btn {
             flex: 1;
-            background: transparent;
-            box-shadow: none;
             padding: 10px;
-            margin: 0 4px;
             border-radius: 40px;
-            font-size: 1rem;
+            background: var(--bg);
+            cursor: pointer;
+            border: none;
         }
         .theme-btn.active {
-            background: var(--btn-op-bg);
-            color: var(--btn-op-text);
+            background: var(--accent);
+            color: white;
         }
         .modal-link {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: var(--btn-func-bg);
+            background: var(--bg);
             margin: 15px 0;
             padding: 12px;
             border-radius: 60px;
             text-decoration: none;
-            color: var(--display-text);
-            font-weight: bold;
+            color: var(--text);
         }
         .close-modal {
-            background: var(--btn-op-bg);
+            background: var(--accent);
             width: 100%;
             margin-top: 15px;
             padding: 12px;
             border-radius: 40px;
-            font-weight: bold;
             border: none;
             cursor: pointer;
+            color: white;
         }
-        @media (max-width: 420px) {
-            button { padding: 14px 0; font-size: 1.2rem; }
-            .result { font-size: 1.8rem; }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            z-index: 1200;
+            animation: fadeOut 2s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
         }
     </style>
 </head>
-<body>
-
-<div class="calculator">
+<body class="dark">
+<div class="container">
     <div class="header">
-        <div class="logo">⚡ SAL ⚡</div>
-        <button class="settings-btn" id="settingsBtn">⚙️</button>
+        <div class="title">🎮 دوز آفلاین</div>
+        <div class="header-buttons">
+            <button class="icon-btn" id="settingsBtn">⚙️</button>
+            <button class="icon-btn" id="helpBtn">❓</button>
+        </div>
     </div>
 
-    <div class="display">
-        <div class="expression" id="expression"></div>
-        <div class="result" id="result">0</div>
-    </div>
-
-    <div class="buttons">
-        <button class="func" data-action="clear">C</button>
-        <button class="func" data-action="back">⌫</button>
-        <button class="func" data-action="percent">%</button>
-        <button class="operator" data-op="/">÷</button>
-        <button data-num="7">7</button>
-        <button data-num="8">8</button>
-        <button data-num="9">9</button>
-        <button class="operator" data-op="*">×</button>
-        <button data-num="4">4</button>
-        <button data-num="5">5</button>
-        <button data-num="6">6</button>
-        <button class="operator" data-op="-">−</button>
-        <button data-num="1">1</button>
-        <button data-num="2">2</button>
-        <button data-num="3">3</button>
-        <button class="operator" data-op="+">+</button>
-        <button data-num="0">0</button>
-        <button data-num="00">00</button>
-        <button data-num=".">.</button>
-        <button class="equal" data-action="equal">=</button>
-    </div>
+    <div id="profileSection"></div>
+    <div id="connectionSection"></div>
+    <div id="gameSection"></div>
 </div>
 
 <div id="settingsModal" class="modal">
@@ -291,186 +302,311 @@
             <button class="theme-btn" id="lightThemeBtn">🌞 روز</button>
             <button class="theme-btn" id="darkThemeBtn">🌙 شب</button>
         </div>
-        <a href="https://rubika.ir/GrimZone" target="_blank" class="modal-link">
-            📱 کانال روبیکا
-        </a>
+        <a href="https://rubika.ir/GrimZone" target="_blank" class="modal-link">📱 کانال روبیکا</a>
+        <div class="version-text">نسخه 2.0 | بازی دوز آفلاین</div>
         <button class="close-modal" id="closeModal">بستن</button>
     </div>
 </div>
 
 <script>
-    // ---------- ماشین حساب ----------
-    const expressionDiv = document.getElementById('expression');
-    const resultDiv = document.getElementById('result');
-    let currentInput = "";
-    let lastResult = null;
-    let justCalculated = false;
+    // ========== کاربر ==========
+    let currentUser = {
+        id: localStorage.getItem("doz_userId") || "user_" + Math.random().toString(36).substr(2, 8),
+        name: localStorage.getItem("doz_username") || "کاربر مهمان",
+        avatar: localStorage.getItem("doz_avatar") || "",
+        wins: parseInt(localStorage.getItem("doz_wins")) || 0,
+        losses: parseInt(localStorage.getItem("doz_losses")) || 0
+    };
+    if (!localStorage.getItem("doz_userId")) {
+        localStorage.setItem("doz_userId", currentUser.id);
+        localStorage.setItem("doz_username", currentUser.name);
+        localStorage.setItem("doz_wins", "0");
+        localStorage.setItem("doz_losses", "0");
+    }
 
-    function updateDisplay() {
-        if(currentInput === "") {
-            expressionDiv.innerText = "";
-            if(lastResult !== null && !justCalculated) {
-                resultDiv.innerText = lastResult;
-            } else {
-                resultDiv.innerText = "0";
+    function saveUser() {
+        localStorage.setItem("doz_username", currentUser.name);
+        if (currentUser.avatar) localStorage.setItem("doz_avatar", currentUser.avatar);
+        localStorage.setItem("doz_wins", currentUser.wins);
+        localStorage.setItem("doz_losses", currentUser.losses);
+    }
+
+    function showToast(msg) {
+        let t = document.createElement("div");
+        t.className = "toast";
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    // ========== پروفایل ==========
+    function renderProfile() {
+        const container = document.getElementById("profileSection");
+        container.innerHTML = `
+            <div class="profile-card">
+                <div class="avatar-large" id="avatarClick" style="background-image: url('${currentUser.avatar}'); background-size: cover; background-position: center;">${!currentUser.avatar ? '👤' : ''}</div>
+                <div class="profile-row"><span>نام:</span><span id="profileName">${escapeHtml(currentUser.name)}</span><button class="btn-sm" id="editNameBtn">ویرایش</button></div>
+                <div class="profile-row"><span>آیدی:</span><span>${currentUser.id}</span><button class="btn-sm btn-outline" id="copyIdBtn">📋 کپی</button></div>
+                <div class="profile-row"><span>🏆 برد:</span><span>${currentUser.wins}</span></div>
+                <div class="profile-row"><span>💔 باخت:</span><span>${currentUser.losses}</span></div>
+                <div class="profile-row"><button class="btn-sm" id="changeAvatarBtn">📷 تغییر عکس</button></div>
+            </div>
+        `;
+        document.getElementById("editNameBtn").onclick = () => {
+            let newName = prompt("نام جدید:", currentUser.name);
+            if (newName && newName.trim()) { currentUser.name = newName.trim(); saveUser(); renderProfile(); renderConnection(); showToast("نام تغییر کرد"); }
+        };
+        document.getElementById("copyIdBtn").onclick = () => { navigator.clipboard.writeText(currentUser.id); showToast("آیدی کپی شد"); };
+        document.getElementById("changeAvatarBtn").onclick = () => {
+            let input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = (e) => {
+                let file = e.target.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = (ev) => {
+                        currentUser.avatar = ev.target.result;
+                        saveUser();
+                        renderProfile();
+                        renderConnection();
+                        showToast("عکس پروفایل تغییر کرد");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        };
+        document.getElementById("avatarClick").onclick = () => document.getElementById("changeAvatarBtn").click();
+    }
+
+    // ========== WebRTC ==========
+    let peerConnection = null;
+    let dataChannel = null;
+    let isHost = false;
+    let opponentInfo = null;
+    let mySymbol = null;
+    let gameBoard = Array(9).fill(null);
+    let gameActive = false;
+    let currentTurn = null;
+
+    function renderConnection() {
+        const container = document.getElementById("connectionSection");
+        container.innerHTML = `
+            <div class="connection-card">
+                <div class="flex-buttons">
+                    <button class="btn-sm" id="hostBtn">🎮 میزبان (ساخت اتاق)</button>
+                    <button class="btn-sm btn-outline" id="joinBtn">🔌 مهمان (پیوستن)</button>
+                </div>
+                <div id="sdpDisplay" style="display:none; margin-top:20px;">
+                    <div>کد اتصال (برای ارسال به حریف):</div>
+                    <textarea id="offerSdp" rows="4" class="sdp-box" readonly></textarea>
+                    <button class="btn-sm" id="copySdpBtn">📋 کپی کد</button>
+                </div>
+                <div id="joinPanel" style="display:none; margin-top:20px;">
+                    <div>کد دریافتی از حریف را وارد کنید:</div>
+                    <textarea id="joinSdp" rows="4" class="sdp-box" placeholder="کد را در اینجا جایگذاری کنید..."></textarea>
+                    <button class="btn-sm" id="doJoinBtn">🔗 اتصال</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById("hostBtn").onclick = () => {
+            document.getElementById("sdpDisplay").style.display = "block";
+            document.getElementById("joinPanel").style.display = "none";
+            createOffer();
+        };
+        document.getElementById("joinBtn").onclick = () => {
+            document.getElementById("joinPanel").style.display = "block";
+            document.getElementById("sdpDisplay").style.display = "none";
+        };
+        document.getElementById("copySdpBtn")?.addEventListener("click", () => {
+            let code = document.getElementById("offerSdp").value;
+            if (code) { navigator.clipboard.writeText(code); showToast("کد کپی شد"); }
+        });
+        document.getElementById("doJoinBtn")?.addEventListener("click", () => joinWithSdp());
+    }
+
+    async function createOffer() {
+        if (!currentUser.avatar) { showToast("لطفاً ابتدا عکس پروفایل خود را انتخاب کنید"); return; }
+        const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+        peerConnection = new RTCPeerConnection(configuration);
+        dataChannel = peerConnection.createDataChannel("game");
+        setupDataChannel();
+        setupPeerConnection();
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        const sdpBase64 = btoa(JSON.stringify(peerConnection.localDescription));
+        document.getElementById("offerSdp").value = sdpBase64;
+        document.getElementById("sdpDisplay").style.display = "block";
+        showToast("کد اتصال ساخته شد. آن را با حریف به اشتراک بگذارید.");
+        isHost = true;
+    }
+
+    async function joinWithSdp() {
+        let sdpBase64 = document.getElementById("joinSdp").value.trim();
+        if (!sdpBase64) { showToast("لطفاً کد دریافتی را وارد کنید"); return; }
+        if (!currentUser.avatar) { showToast("لطفاً ابتدا عکس پروفایل خود را انتخاب کنید"); return; }
+        let remoteDesc;
+        try { remoteDesc = JSON.parse(atob(sdpBase64)); } catch(e) { showToast("کد نامعتبر است"); return; }
+        const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+        peerConnection = new RTCPeerConnection(configuration);
+        setupPeerConnection();
+        peerConnection.ondatachannel = (event) => {
+            dataChannel = event.channel;
+            setupDataChannel();
+        };
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(remoteDesc));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        isHost = false;
+        showToast("درخواست اتصال ارسال شد. منتظر تایید حریف...");
+    }
+
+    function setupPeerConnection() {
+        peerConnection.onconnectionstatechange = () => {
+            if (peerConnection.connectionState === "connected") {
+                showToast("اتصال برقرار شد!");
+                sendMessage({ type: "profile", name: currentUser.name, avatar: currentUser.avatar, userId: currentUser.id });
             }
-        } else {
-            expressionDiv.innerText = currentInput;
-            if(!justCalculated) resultDiv.innerText = "?";
-        }
-        if(justCalculated && lastResult !== null) {
-            resultDiv.innerText = lastResult;
+        };
+    }
+
+    function setupDataChannel() {
+        if (!dataChannel) return;
+        dataChannel.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            handleMessage(data);
+        };
+    }
+
+    function sendMessage(msg) {
+        if (dataChannel && dataChannel.readyState === "open") {
+            dataChannel.send(JSON.stringify(msg));
         }
     }
 
-    function evaluateExpression(expr) {
-        try {
-            let processed = expr.replace(/÷/g, '/').replace(/×/g, '*');
-            processed = processed.replace(/(\d+(?:\.\d+)?)%/g, (match, num) => parseFloat(num)/100);
-            if(/[^0-9+\-*/%. ]/.test(processed)) throw new Error();
-            const calcFunc = new Function('return (' + processed + ')');
-            let result = calcFunc();
-            if(isNaN(result) || !isFinite(result)) throw new Error();
-            return parseFloat(result.toFixed(10));
-        } catch(e) { return null; }
-    }
-
-    function calculate() {
-        if(currentInput === "") {
-            if(lastResult !== null) {
-                currentInput = String(lastResult);
-                justCalculated = false;
-                updateDisplay();
+    function handleMessage(msg) {
+        if (msg.type === "profile") {
+            opponentInfo = { name: msg.name, avatar: msg.avatar, userId: msg.userId };
+            if (isHost) {
+                mySymbol = 'X';
+                sendMessage({ type: "role", mySymbol: 'O' });
+                currentTurn = currentUser.id;
+                gameActive = true;
+                showToast(`بازی با ${opponentInfo.name} شروع شد. نوبت شماست ❌`);
             }
-            return;
-        }
-        const res = evaluateExpression(currentInput);
-        if(res !== null) {
-            lastResult = res;
-            resultDiv.innerText = res;
-            justCalculated = true;
-            updateDisplay();
-        } else {
-            resultDiv.innerText = "خطا";
-            setTimeout(() => {
-                if(!justCalculated) resultDiv.innerText = "?";
-                else resultDiv.innerText = lastResult;
-            }, 800);
-        }
-    }
-
-    function addInput(value) {
-        if(justCalculated) {
-            if(/[0-9.]/.test(value)) {
-                currentInput = value;
-                justCalculated = false;
-                lastResult = null;
-            } else if(value === '+' || value === '-' || value === '*' || value === '/' || value === '÷' || value === '×') {
-                if(lastResult !== null) {
-                    currentInput = String(lastResult) + value;
-                    justCalculated = false;
-                    lastResult = null;
-                } else { currentInput = value; justCalculated = false; }
-            } else { currentInput = value; justCalculated = false; }
-            updateDisplay();
-            return;
-        }
-        if(value === '.') {
-            let lastNumber = currentInput.split(/[\+\-\*\/÷×%]/).pop();
-            if(lastNumber.includes('.')) return;
-        }
-        const lastChar = currentInput.slice(-1);
-        const ops = ['+','-','*','/','÷','×','%'];
-        if(ops.includes(lastChar) && ops.includes(value)) {
-            currentInput = currentInput.slice(0, -1) + value;
-        } else {
-            currentInput += value;
-        }
-        justCalculated = false;
-        updateDisplay();
-    }
-
-    function clearAll() { currentInput = ""; lastResult = null; justCalculated = false; updateDisplay(); }
-    function backspace() {
-        if(justCalculated) { clearAll(); return; }
-        currentInput = currentInput.slice(0, -1);
-        updateDisplay();
-    }
-    function applyPercent() {
-        if(justCalculated && lastResult !== null) {
-            currentInput = String(lastResult);
-            justCalculated = false;
-        }
-        if(currentInput === "") return;
-        try {
-            let expr = currentInput.replace(/÷/g, '/').replace(/×/g, '*');
-            let val = new Function('return (' + expr + ')')();
-            if(!isNaN(val) && isFinite(val)) {
-                currentInput = String(val / 100);
-                updateDisplay();
-            } else throw new Error();
-        } catch(e) {
-            const parts = currentInput.split(/[\+\-\*\/÷×]/);
-            let lastNum = parts[parts.length-1];
-            if(lastNum && !isNaN(parseFloat(lastNum))) {
-                let percentNum = parseFloat(lastNum)/100;
-                currentInput = currentInput.slice(0, -lastNum.length) + percentNum;
-                updateDisplay();
+            renderGameUI();
+        } else if (msg.type === "role") {
+            mySymbol = (msg.mySymbol === 'X') ? 'O' : 'X';
+            currentTurn = (mySymbol === 'X') ? currentUser.id : opponentInfo.userId;
+            gameActive = true;
+            showToast(`شما ${mySymbol === 'X' ? '❌' : '⭕'} هستید. نوبت ${currentTurn === currentUser.id ? "شما" : "حریف"}`);
+            renderGameUI();
+        } else if (msg.type === "move") {
+            let idx = msg.index;
+            if (gameActive && currentTurn === msg.playerId && gameBoard[idx] === null) {
+                gameBoard[idx] = (msg.symbol === 'X') ? 'X' : 'O';
+                currentTurn = (currentTurn === currentUser.id) ? opponentInfo.userId : currentUser.id;
+                renderGameUI();
+                checkWinner();
             }
         }
-        justCalculated = false;
     }
 
-    document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if(btn.hasAttribute('data-action')) {
-                const act = btn.getAttribute('data-action');
-                if(act === 'clear') clearAll();
-                else if(act === 'back') backspace();
-                else if(act === 'equal') calculate();
-                else if(act === 'percent') applyPercent();
+    function sendMove(index) {
+        if (!gameActive) return;
+        if (currentTurn !== currentUser.id) { showToast("نوبت شما نیست"); return; }
+        if (gameBoard[index] !== null) return;
+        gameBoard[index] = mySymbol;
+        sendMessage({ type: "move", index: index, symbol: mySymbol, playerId: currentUser.id });
+        currentTurn = opponentInfo.userId;
+        renderGameUI();
+        checkWinner();
+    }
+
+    function checkWinner() {
+        const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (let p of patterns) {
+            if (gameBoard[p[0]] && gameBoard[p[0]] === gameBoard[p[1]] && gameBoard[p[0]] === gameBoard[p[2]]) {
+                gameActive = false;
+                if (gameBoard[p[0]] === mySymbol) {
+                    currentUser.wins++; saveUser(); showToast("🎉 شما برنده شدید!");
+                } else {
+                    currentUser.losses++; saveUser(); showToast("😢 حریف برنده شد");
+                }
+                renderProfile();
+                renderGameUI();
                 return;
             }
-            if(btn.hasAttribute('data-num')) addInput(btn.getAttribute('data-num'));
-            if(btn.hasAttribute('data-op')) addInput(btn.getAttribute('data-op'));
-        });
-    });
-
-    // ---------- مودال تنظیمات و تم ----------
-    const modal = document.getElementById('settingsModal');
-    const settingsBtn = document.getElementById('settingsBtn');
-    const closeModal = document.getElementById('closeModal');
-    const lightBtn = document.getElementById('lightThemeBtn');
-    const darkBtn = document.getElementById('darkThemeBtn');
-
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModalFunc() { modal.style.display = 'none'; }
-
-    settingsBtn.addEventListener('click', openModal);
-    closeModal.addEventListener('click', closeModalFunc);
-    modal.addEventListener('click', (e) => { if(e.target === modal) closeModalFunc(); });
-
-    function setTheme(theme) {
-        if(theme === 'dark') {
-            document.body.classList.add('dark');
-            localStorage.setItem('calTheme', 'dark');
-            darkBtn.classList.add('active');
-            lightBtn.classList.remove('active');
-        } else {
-            document.body.classList.remove('dark');
-            localStorage.setItem('calTheme', 'light');
-            lightBtn.classList.add('active');
-            darkBtn.classList.remove('active');
+        }
+        if (gameBoard.every(c => c !== null)) {
+            gameActive = false;
+            showToast("🤝 مساوی!");
+            renderGameUI();
         }
     }
 
-    lightBtn.addEventListener('click', () => setTheme('light'));
-    darkBtn.addEventListener('click', () => setTheme('dark'));
+    function renderGameUI() {
+        const container = document.getElementById("gameSection");
+        if (!gameActive || !opponentInfo) {
+            container.innerHTML = `<div class="game-panel">${opponentInfo ? "در انتظار شروع بازی..." : "ابتدا اتصال برقرار کن"}</div>`;
+            return;
+        }
+        let isMyTurn = (currentTurn === currentUser.id);
+        container.innerHTML = `
+            <div class="game-panel">
+                <div class="turn-text">${isMyTurn ? "⭐ نوبت شماست" : "⏳ نوبت " + opponentInfo.name}</div>
+                <div class="board" id="gameBoard"></div>
+            </div>
+        `;
+        const boardDiv = document.getElementById("gameBoard");
+        for (let i = 0; i < 9; i++) {
+            let cell = document.createElement("div");
+            cell.className = "cell";
+            let val = gameBoard[i];
+            if (val === 'X') cell.textContent = '❌';
+            else if (val === 'O') cell.textContent = '⭕';
+            cell.onclick = () => sendMove(i);
+            boardDiv.appendChild(cell);
+        }
+    }
 
-    const savedTheme = localStorage.getItem('calTheme');
-    if(savedTheme === 'dark') setTheme('dark');
-    else setTheme('light');
+    // ========== تنظیمات ==========
+    const modal = document.getElementById("settingsModal");
+    const settingsBtn = document.getElementById("settingsBtn");
+    const closeModal = document.getElementById("closeModal");
+    const lightBtn = document.getElementById("lightThemeBtn");
+    const darkBtn = document.getElementById("darkThemeBtn");
+    const helpBtn = document.getElementById("helpBtn");
+
+    function setTheme(theme) {
+        document.body.className = theme;
+        localStorage.setItem("doz_theme", theme);
+        if (theme === 'dark') { darkBtn.classList.add("active"); lightBtn.classList.remove("active"); }
+        else { lightBtn.classList.add("active"); darkBtn.classList.remove("active"); }
+    }
+
+    settingsBtn.onclick = () => modal.style.display = "flex";
+    closeModal.onclick = () => modal.style.display = "none";
+    modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+    lightBtn.onclick = () => setTheme("light");
+    darkBtn.onclick = () => setTheme("dark");
+    helpBtn.onclick = () => {
+        alert("🎮 راهنمای بازی:\n1. هر دو نفر عکس پروفایل انتخاب کنید.\n2. یک نفر \"میزبان\" را بزند و کد را برای دوستش بفرستد.\n3. نفر دوم \"مهمان\" را بزند و کد را جایگذاری کند.\n4. بازی شروع می‌شود.");
+    };
+
+    const savedTheme = localStorage.getItem("doz_theme") || "dark";
+    setTheme(savedTheme);
+    renderProfile();
+    renderConnection();
+    renderGameUI();
 </script>
 </body>
 </html>
